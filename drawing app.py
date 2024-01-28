@@ -17,29 +17,57 @@ run = True
 sb = sb()
 sbX, sbY = screenW - 78, screenH - 120
 isclicked = False
-size = pygame.Surface((85, 23))
+clicking_type = 0
+drawing = pygame.Surface((1120, 680), pygame.SRCALPHA)
+which_point = None
 
 while run:
     clock.tick(fps)
-    screen.fill((255, 255, 255))
+    screen.fill((20, 20, 20))
+    drawing.fill((0, 0, 0, 0))
     mpos = pygame.mouse.get_pos()
-    pygame.draw.ellipse(screen, (0, 255, 0), (100, 100, 85, 23))
-    surface = screen.blit(size, (100, 100))
+    pygame.draw.ellipse(drawing, (0, 255, 0), (0, 0, 85, 23))
+    pygame.draw.rect(screen, (255, 255, 255), (10, 10, 1120, 680))
+    
+    def line(sX, sY, eX, eY, surface, thickness, coulor):
+        pygame.draw.line(surface, coulor, (sX, sY), (eX, eY), thickness)
+        p1 = pygame.draw.circle(surface, coulor, (sX, sY), round(thickness/2))
+        p2 = pygame.draw.circle(surface, coulor, (eX, eY), round(thickness/2))
+        return p1, p2
+
+    Points = line(500, 500, 250, 600, drawing, 20, (244, 146, 35))
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
+
         if isclicked:
-            pygame.image.save(surface, "ellips.png")
+            pygame.image.save(drawing, "ellips.png")
             print("saved")
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1:
+                print(mpos, "left click")
+                for p in range(len(Points)):
+                    print(Points[p])
+                    if Points[p].collidepoint(mpos):
+                        print("you have selected me")
+                        which_point = p
+            if event.button == 3:
+                print(mpos, "right click")
+
+        if event.type == pygame.MOUSEBUTTONUP:
+            if event.button == 1:
+                which_point = None
+
+        if event.type == pygame.MOUSEMOTION:
+            if which_point != None:
+                Points[which_point].move_ip(event.rel)
 
     sb.render(screen, sbX, sbY)
     isclicked = sb.Test_clicked(sbX, sbY, event, mpos)
 
-    pygame.draw.ellipse(screen, (0, 255, 0), (100, 100, 85, 23))
-
-    if event.type == pygame.MOUSEBUTTONDOWN:
-        print(mpos)
+    screen.blit(drawing, (10, 10))
 
     pygame.display.flip()
 pygame.quit()
