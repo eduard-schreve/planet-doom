@@ -4,7 +4,7 @@ pygame.init()
 
 class sb():
     def __init__(self):
-        self.image = pygame.image.load("save_button.png")
+        self.image = pygame.image.load("save_button.png").convert_alpha()
         self.x = 0
         self.y = 0
 
