@@ -27,15 +27,21 @@ while run:
     drawing.fill((0, 0, 0, 0))
     mpos = pygame.mouse.get_pos()
     pygame.draw.ellipse(drawing, (0, 255, 0), (0, 0, 85, 23))
-    pygame.draw.rect(screen, (255, 255, 255), (10, 10, 1120, 680))
+    # pygame.draw.rect(screen, (255, 255, 255), (10, 10, 1120, 680))
     
     def line(sX, sY, eX, eY, surface, thickness, coulor):
         pygame.draw.line(surface, coulor, (sX, sY), (eX, eY), thickness)
+        pygame.draw.rect(surface, (0, 0, 0), (sX, sY, thickness, thickness))
+        pygame.draw.rect(surface, (0, 0, 0), (eX, eY, thickness, thickness))
         p1 = pygame.draw.circle(surface, coulor, (sX, sY), round(thickness/2))
         p2 = pygame.draw.circle(surface, coulor, (eX, eY), round(thickness/2))
+        # pygame.draw.rect(surface, (0, 0, 0), p1)
+        # pygame.draw.rect(surface, (0, 0, 0), p2)
         return p1, p2
 
     Points = line(500, 500, 250, 600, drawing, 20, (244, 146, 35))
+    # pygame.draw.rect(drawing, (0, 0, 0), (Points[0]))
+    # pygame.draw.rect(drawing, (0, 0, 0), (Points[1]))
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
