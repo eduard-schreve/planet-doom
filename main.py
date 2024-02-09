@@ -86,8 +86,8 @@ while run: #main game loop
         if event.type == pygame.KEYDOWN: #check for keypresses
             if event.key == pygame.K_SPACE: #check for the space key
                 is_shooting = True
-                bulletX = gunX + 48
-                bulletY = gunY + 14
+                bulletX = gunX
+                bulletY = gunY
 
     # #create the background
     for y in range(number_of_spritesH):
@@ -115,8 +115,19 @@ while run: #main game loop
     nX, nY = bressenham.moveSprite(screen, t, nativesX, nativesY, jhon_x_pos, jhon_y_pos)
 
     if is_shooting:
-        bullet.render(bulletX, bulletY, screen)
-        bulletX += 100
+        bullet.render(bulletX, bulletY, screen, jhon_facing)
+        if jhon_facing == "up":
+            bulletY += 100
+            bulletR = pygame.Rect(bulletX, 0, 10, bulletY)
+        elif jhon_facing == "down":
+            bulletY -= 100
+            bulletR = pygame.Rect(bulletX, bulletY, 10, screen_hight)
+        elif jhon_facing == "left":
+            bulletX -= 100
+            bulletR = pygame.Rect(0, bulletY, bulletX, 10)
+        elif jhon_facing == "right":
+            bulletX += 100
+            bulletR = pygame.Rect(bulletX, bulletY, screen_width, 10)
         if pygame.Rect.colliderect(bulletR, nativesR):
             pygame.draw.rect(surface, (255, 0, 0, 100), nativesR)
 
