@@ -16,7 +16,7 @@ screen_width, screen_hight = info.current_w, info.current_h - 50
 screen = pygame.display.set_mode((screen_width, screen_hight), pygame.RESIZABLE) #create the screen instance
 surface = pygame.Surface((screen_width, screen_hight), pygame.SRCALPHA)
 screen.fill((0, 0, 0))
-pygame.display.set_caption('Vici legends') #set a caption for the screen
+pygame.display.set_caption('Astronomical') #set a caption for the screen
 
 fps = 60
 run = True
@@ -96,8 +96,8 @@ while run: #main game loop
                 
     #render die sprites
     jhon.render(jhon_x_pos, jhon_y_pos, screen, jhon_img)
-    Gun.render(gunX, gunY, screen)
-    wall.render(0, 0, screen)
+    Gun.render(gunX, gunY, screen, jhon_facing)
+    # wall.render(0, 0, screen)
     enemy.render(nX, nY, screen)
     pygame.draw.line(surface, (0, 0, 0, 0), (bulletX, bulletY), (screen_width, bulletY), 1)
     bulletR = pygame.Rect(bulletX, bulletY, screen_width, 10)

@@ -20,6 +20,7 @@ isclicked = False
 clicking_type = 0
 drawing = pygame.Surface((1120, 680), pygame.SRCALPHA)
 which_point = None
+lineSX, lineSY, lineEY, lineEY = 500, 500, 250, 600
 
 while run:
     clock.tick(fps)
@@ -27,7 +28,7 @@ while run:
     drawing.fill((0, 0, 0, 0))
     mpos = pygame.mouse.get_pos()
     pygame.draw.ellipse(drawing, (0, 255, 0), (0, 0, 85, 23))
-    # pygame.draw.rect(screen, (255, 255, 255), (10, 10, 1120, 680))
+    pygame.draw.rect(screen, (255, 255, 255), (10, 10, 1120, 680))
     
     def line(sX, sY, eX, eY, surface, thickness, coulor):
         pygame.draw.line(surface, coulor, (sX, sY), (eX, eY), thickness)
@@ -39,7 +40,7 @@ while run:
         # pygame.draw.rect(surface, (0, 0, 0), p2)
         return p1, p2
 
-    Points = line(500, 500, 250, 600, drawing, 20, (244, 146, 35))
+    Points = line(lineSX, lineSY, lineEY, lineEY, drawing, 20, (244, 146, 35))
     # pygame.draw.rect(drawing, (0, 0, 0), (Points[0]))
     # pygame.draw.rect(drawing, (0, 0, 0), (Points[1]))
 
