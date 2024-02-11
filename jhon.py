@@ -27,4 +27,3 @@ class jhon():
             return self.image_up
         if self.facing == 'down':
             return self.image_down
-        

@@ -12,10 +12,10 @@ class bullet():
         self.y = Y
         self.facing = facing
         if self.facing == "up":
-            screen.blit(self.imageFlip, (self.x + 6, self.y - 35))
-        elif self.facing == "down":
             screen.blit(self.imageFlip, (self.x + 6, self.y + 35))
+        elif self.facing == "down":
+            screen.blit(self.imageFlip, (self.x + 6, self.y - 35))
         elif self.facing == "left":
-            screen.blit(self.image, (self.x, self.y))
+            screen.blit(self.image, (self.x - 150, self.y + 17))
         elif self.facing == "right":
-            screen.blit(self.image, (self.x, self.y))
+            screen.blit(self.image, (self.x + 50, self.y + 17))

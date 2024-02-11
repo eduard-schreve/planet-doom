@@ -6,6 +6,7 @@ from bullet import bullet
 from gun import Gun
 from enemy import enemy
 from imovables import wall
+from ui import Ui
 import bressenham
 
 pygame.init()
@@ -26,14 +27,18 @@ bullet = bullet()
 Gun = Gun()
 enemy = enemy()
 wall = wall()
-jhon_x_pos = 100
-jhon_y_pos = screen_hight - 300
+Ui = Ui()
+jhonX = 100
+jhonY = screen_hight - 300
 jhon_facing = 'right'
 jhon_img = jhon.qualities('right')
 jhon_img_right = jhon.qualities('right')
 jhon_img_left = jhon.qualities('left')
 jhon_img_up = jhon.qualities('up')
 jhon_img_down = jhon.qualities('down')
+quadeshHealth = 6
+healthCooldown = 0
+hited = False
 bulletX = 100
 bulletY = 100
 nativesX, nativesY = 700, 400
@@ -72,9 +77,9 @@ for i in range(number_of_spritesW):
     cordsW[i] = i*100
 
 while run: #main game loop
-    cordsX, cordsY, gradient = bressenham.bres(nativesX, nativesY, jhon_x_pos, jhon_y_pos)
-    gunX = jhon_x_pos + 48
-    gunY = jhon_y_pos + 114
+    cordsX, cordsY, gradient = bressenham.bres(nativesX, nativesY, jhonX, jhonY)
+    gunX = jhonY + 48
+    gunY = jhonY + 114
     clock.tick(fps)
     surface.fill((0, 0, 0, 0))
     screen.fill((0, 0, 0)) #fill the screen with a coulor
@@ -95,13 +100,14 @@ while run: #main game loop
                 ground.render(cordsW[x], cordsH[y], screen)
                 
     #render die sprites
-    jhon.render(jhon_x_pos, jhon_y_pos, screen, jhon_img)
+    jhon.render(jhonX, jhonY, screen, jhon_img)
     Gun.render(gunX, gunY, screen, jhon_facing)
-    # wall.render(0, 0, screen)
+    Ui.infoTab_render(6, quadeshHealth, 0, 0, screen)
     enemy.render(nX, nY, screen)
     pygame.draw.line(surface, (0, 0, 0, 0), (bulletX, bulletY), (screen_width, bulletY), 1)
     bulletR = pygame.Rect(bulletX, bulletY, screen_width, 10)
     nativesR = pygame.Rect(nX, nY, 58, 200)
+    quadeshRect = pygame.Rect(jhonX, jhonY, 49, 200)
     
     if tTF:
         t += speed
@@ -112,7 +118,7 @@ while run: #main game loop
         tTF = True
 
     tTF = bressenham.testForCollide(wallsrfs, tTF, cordsX, cordsY, gradient)
-    nX, nY = bressenham.moveSprite(screen, t, nativesX, nativesY, jhon_x_pos, jhon_y_pos)
+    nX, nY = bressenham.moveSprite(screen, t, nativesX, nativesY, jhonX, jhonY)
 
     if is_shooting:
         bullet.render(bulletX, bulletY, screen, jhon_facing)
@@ -130,6 +136,15 @@ while run: #main game loop
             bulletR = pygame.Rect(bulletX, bulletY, screen_width, 10)
         if pygame.Rect.colliderect(bulletR, nativesR):
             pygame.draw.rect(surface, (255, 0, 0, 100), nativesR)
+    if pygame.Rect.colliderect(quadeshRect, nativesR):
+        hited = True
+        if hited and healthCooldown != 0:
+            healthCooldown -= 1
+        if healthCooldown == 0 and hited:
+            quadeshHealth -= 0.5
+            hited = False
+            healthCooldown = fps
+            pygame.draw.rect(surface, (255, 0, 0, 100), quadeshRect)
 
     if bulletX >= screen_width - 50:
         is_shooting = False
@@ -137,25 +152,25 @@ while run: #main game loop
 
     if event.type == pygame.KEYDOWN:
         if event.key == pygame.K_LEFT: #check for the left key
-            jhon_x_pos -= 4
+            jhonX -= 4
             if jhon_facing != 'left':
                 jhon_img = jhon_img_left
                 jhon_facing = 'left'
 
         if event.key == pygame.K_RIGHT: #check for the right key
-            jhon_x_pos += 4
+            jhonX += 4
             if jhon_facing != 'right':
                 jhon_img = jhon_img_right
                 jhon_facing = 'right'
         
         if event.key == pygame.K_UP: #check for the up key
-            jhon_y_pos -= 4
+            jhonY -= 4
             if jhon_facing != 'down':
                 jhon_img = jhon_img_up
                 jhon_facing = 'down'
 
         if event.key == pygame.K_DOWN: #check for the down key
-            jhon_y_pos += 4
+            jhonY += 4
             if jhon_facing != 'up':
                 jhon_img = jhon_img_down
                 jhon_facing = 'up'
