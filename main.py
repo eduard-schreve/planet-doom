@@ -36,13 +36,17 @@ jhon_img_right = jhon.qualities('right')
 jhon_img_left = jhon.qualities('left')
 jhon_img_up = jhon.qualities('up')
 jhon_img_down = jhon.qualities('down')
-quadeshHealth = 6
+quadeshHealth = 200
 healthCooldown = 0
+quadeshRect = pygame.Rect(jhonX, jhonY, 49, 200)
 hited = False
+rotation = 360
 bulletX = 100
 bulletY = 100
+bulletR = pygame.Rect(bulletX, bulletY, screen_width, 10)
 nativesX, nativesY = 700, 400
 nX, nY = nativesX, nativesY
+nativesHealth = 20
 enemyS = enemy.qualities()
 wallX, wallY = 0, 0
 wallsrfs = pygame.Rect(0, 0, 120, 80)
@@ -78,7 +82,7 @@ for i in range(number_of_spritesW):
 
 while run: #main game loop
     cordsX, cordsY, gradient = bressenham.bres(nativesX, nativesY, jhonX, jhonY)
-    gunX = jhonY + 48
+    gunX = jhonX + 48
     gunY = jhonY + 114
     clock.tick(fps)
     surface.fill((0, 0, 0, 0))
@@ -102,11 +106,27 @@ while run: #main game loop
     #render die sprites
     jhon.render(jhonX, jhonY, screen, jhon_img)
     Gun.render(gunX, gunY, screen, jhon_facing)
-    Ui.infoTab_render(6, quadeshHealth, 0, 0, screen)
-    enemy.render(nX, nY, screen)
+    Ui.infoTab_render(quadeshHealth, 0, 0, screen)
+    if nativesHealth >= 0:
+        enemy.render(nX, nY, screen)
+        nativesR = pygame.Rect(nX, nY, 58, 200)
+        if pygame.Rect.colliderect(quadeshRect, nativesR):
+            hited = True
+        if hited and healthCooldown != 0:
+            healthCooldown -= 1
+        if healthCooldown == 0 and hited and quadeshHealth > 0:
+            quadeshHealth -= 10
+            hited = False
+            healthCooldown = fps
+            pygame.draw.rect(surface, (255, 0, 0, 100), quadeshRect)
+        if quadeshHealth == 0:
+            deathAnim = jhon.deathScreen(surface, screen_hight, screen_width)
+            if deathAnim:
+                Ui.deathScreen(surface, 368, 329)
+        nativesHealth = enemy.takeDamage(surface, nativesHealth, nativesR, bulletR)
+
     pygame.draw.line(surface, (0, 0, 0, 0), (bulletX, bulletY), (screen_width, bulletY), 1)
     bulletR = pygame.Rect(bulletX, bulletY, screen_width, 10)
-    nativesR = pygame.Rect(nX, nY, 58, 200)
     quadeshRect = pygame.Rect(jhonX, jhonY, 49, 200)
     
     if tTF:
@@ -120,60 +140,66 @@ while run: #main game loop
     tTF = bressenham.testForCollide(wallsrfs, tTF, cordsX, cordsY, gradient)
     nX, nY = bressenham.moveSprite(screen, t, nativesX, nativesY, jhonX, jhonY)
 
-    if is_shooting:
-        bullet.render(bulletX, bulletY, screen, jhon_facing)
-        if jhon_facing == "up":
-            bulletY += 100
-            bulletR = pygame.Rect(bulletX, 0, 10, bulletY)
-        elif jhon_facing == "down":
-            bulletY -= 100
-            bulletR = pygame.Rect(bulletX, bulletY, 10, screen_hight)
-        elif jhon_facing == "left":
-            bulletX -= 100
-            bulletR = pygame.Rect(0, bulletY, bulletX, 10)
-        elif jhon_facing == "right":
-            bulletX += 100
-            bulletR = pygame.Rect(bulletX, bulletY, screen_width, 10)
-        if pygame.Rect.colliderect(bulletR, nativesR):
-            pygame.draw.rect(surface, (255, 0, 0, 100), nativesR)
-    if pygame.Rect.colliderect(quadeshRect, nativesR):
-        hited = True
-        if hited and healthCooldown != 0:
-            healthCooldown -= 1
-        if healthCooldown == 0 and hited:
-            quadeshHealth -= 0.5
-            hited = False
-            healthCooldown = fps
-            pygame.draw.rect(surface, (255, 0, 0, 100), quadeshRect)
+    if quadeshHealth > 0:
+        if is_shooting:
+            bullet.render(bulletX, bulletY, screen, jhon_facing)
+            if jhon_facing == "up":
+                bulletY += 100
+                bulletR = pygame.Rect(bulletX, 0, 10, bulletY)
+            elif jhon_facing == "down":
+                bulletY -= 100
+                bulletR = pygame.Rect(bulletX, bulletY, 10, screen_hight)
+            elif jhon_facing == "left":
+                bulletX -= 100
+                bulletR = pygame.Rect(0, bulletY, bulletX, 10)
+            elif jhon_facing == "right":
+                bulletX += 100
+                bulletR = pygame.Rect(bulletX, bulletY, screen_width, 10)
+        # nativesHealth = enemy.takeDamage(surface, nativesHealth, nativesR, bulletR)
+
+    # if pygame.Rect.colliderect(quadeshRect, nativesR):
+    #     hited = True
+    #     if hited and healthCooldown != 0:
+    #         healthCooldown -= 1
+    #     if healthCooldown == 0 and hited and quadeshHealth > 0:
+    #         quadeshHealth -= 10
+    #         hited = False
+    #         healthCooldown = fps
+    #         pygame.draw.rect(surface, (255, 0, 0, 100), quadeshRect)
+    #     if quadeshHealth == 0:
+    #         deathAnim = jhon.deathScreen(surface, screen_hight, screen_width)
+    #         if deathAnim:
+    #             Ui.deathScreen(surface, 368, 329)
 
     if bulletX >= screen_width - 50:
         is_shooting = False
         bulletX = 100
 
-    if event.type == pygame.KEYDOWN:
-        if event.key == pygame.K_LEFT: #check for the left key
-            jhonX -= 4
-            if jhon_facing != 'left':
-                jhon_img = jhon_img_left
-                jhon_facing = 'left'
+    if quadeshHealth > 0:
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_LEFT: #check for the left key
+                jhonX -= 4
+                if jhon_facing != 'left':
+                    jhon_img = jhon_img_left
+                    jhon_facing = 'left'
 
-        if event.key == pygame.K_RIGHT: #check for the right key
-            jhonX += 4
-            if jhon_facing != 'right':
-                jhon_img = jhon_img_right
-                jhon_facing = 'right'
-        
-        if event.key == pygame.K_UP: #check for the up key
-            jhonY -= 4
-            if jhon_facing != 'down':
-                jhon_img = jhon_img_up
-                jhon_facing = 'down'
+            if event.key == pygame.K_RIGHT: #check for the right key
+                jhonX += 4
+                if jhon_facing != 'right':
+                    jhon_img = jhon_img_right
+                    jhon_facing = 'right'
+            
+            if event.key == pygame.K_UP: #check for the up key
+                jhonY -= 4
+                if jhon_facing != 'down':
+                    jhon_img = jhon_img_up
+                    jhon_facing = 'down'
 
-        if event.key == pygame.K_DOWN: #check for the down key
-            jhonY += 4
-            if jhon_facing != 'up':
-                jhon_img = jhon_img_down
-                jhon_facing = 'up'
+            if event.key == pygame.K_DOWN: #check for the down key
+                jhonY += 4
+                if jhon_facing != 'up':
+                    jhon_img = jhon_img_down
+                    jhon_facing = 'up'
 
     mpos = pygame.mouse.get_pos() #get the position of the mouse if the mouse is clicked
     if event.type == pygame.MOUSEBUTTONDOWN:

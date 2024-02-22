@@ -7,15 +7,15 @@ class Ui():
         self.x = 0
         self.y = 0
 
-    def infoTab_render(self, preHealth, health, X, Y, screen):
+    def infoTab_render(self, health, X, Y, screen):
         self.x = X
         self.y = Y
         infoTab = pygame.image.load("infoTab.png").convert_alpha()
-        Health = pygame.image.load("health.png").convert_alpha()
+        pygame.draw.rect(infoTab, (0, 255, 0), (10, 10, int(health), 20))
         screen.blit(infoTab, (self.x, self.y))
-        for i in range(int(health)):
-            screen.blit(Health, (i * 40 + self.x, self.y), (80, 0, 40, 40))
-            if health - int(health) == 0.5:
-                screen.blit(Health, (i * 40 + 40 + self.x, self.y), (40, 0, 40, 40))
-        for c in range(int(preHealth - health)):
-            screen.blit(Health, (preHealth * 40 + self.x - 40 * (c + 1), self.y), (0, 0, 40, 40))
+
+    def deathScreen(self, screen, X, Y):
+        self.x = X
+        self.y = Y
+        deathScreen = pygame.image.load("deathMenu.png").convert_alpha()
+        screen.blit(deathScreen, (self.x, self.y))
