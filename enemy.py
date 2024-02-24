@@ -7,6 +7,8 @@ class enemy():
         self.image = pygame.image.load('natives.png').convert_alpha()
         self.y = 0
         self.x = 0
+        self.canShoot = True
+        self.hitted = False
 
     def render(self, X, Y, screen):
         self.y = Y
@@ -20,6 +22,5 @@ class enemy():
         if pygame.Rect.colliderect(eRect, bRect):
             health -= 5
             pygame.draw.rect(screen, (255, 0, 0, 100), eRect)
-            print(health)
 
         return health

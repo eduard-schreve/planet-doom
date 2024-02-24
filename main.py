@@ -10,12 +10,14 @@ from ui import Ui
 import bressenham
 
 pygame.init()
+pygame.font.init()
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'
 info = pygame.display.Info()
 screen_width, screen_hight = info.current_w, info.current_h - 50
 screen = pygame.display.set_mode((screen_width, screen_hight), pygame.RESIZABLE) #create the screen instance
 surface = pygame.Surface((screen_width, screen_hight), pygame.SRCALPHA)
+font = pygame.font.Font("Game Of Squids.ttf", 80)
 screen.fill((0, 0, 0))
 pygame.display.set_caption('Astronomical') #set a caption for the screen
 
@@ -37,15 +39,18 @@ jhon_img_left = jhon.qualities('left')
 jhon_img_up = jhon.qualities('up')
 jhon_img_down = jhon.qualities('down')
 quadeshHealth = 200
-healthCooldown = 0
+nativesHealthCooldown = 0
+nativesDeathCooldown = 0
 quadeshRect = pygame.Rect(jhonX, jhonY, 49, 200)
 hited = False
+bulletHit = True
 rotation = 360
 bulletX = 100
 bulletY = 100
 bulletR = pygame.Rect(bulletX, bulletY, screen_width, 10)
 nativesX, nativesY = 700, 400
 nX, nY = nativesX, nativesY
+nativesR = pygame.Rect(nX, nY, 58, 200)
 nativesHealth = 20
 enemyS = enemy.qualities()
 wallX, wallY = 0, 0
@@ -97,6 +102,8 @@ while run: #main game loop
                 is_shooting = True
                 bulletX = gunX
                 bulletY = gunY
+        if nativesHealth > 0:
+            nativesHealth = enemy.takeDamage(surface, nativesHealth, nativesR, bulletR)
 
     # #create the background
     for y in range(number_of_spritesH):
@@ -107,23 +114,25 @@ while run: #main game loop
     jhon.render(jhonX, jhonY, screen, jhon_img)
     Gun.render(gunX, gunY, screen, jhon_facing)
     Ui.infoTab_render(quadeshHealth, 0, 0, screen)
-    if nativesHealth >= 0:
+    test = font.render("Score:", True, (0, 0, 0))
+    screen.blit(test, (600, 0))
+
+    if nativesHealth > 0:
         enemy.render(nX, nY, screen)
         nativesR = pygame.Rect(nX, nY, 58, 200)
         if pygame.Rect.colliderect(quadeshRect, nativesR):
             hited = True
-        if hited and healthCooldown != 0:
-            healthCooldown -= 1
-        if healthCooldown == 0 and hited and quadeshHealth > 0:
+        if hited and nativesHealthCooldown != 0:
+            nativesHealthCooldown -= 1
+        if nativesHealthCooldown == 0 and hited and quadeshHealth > 0:
             quadeshHealth -= 10
             hited = False
-            healthCooldown = fps
+            nativesHealthCooldown = fps
             pygame.draw.rect(surface, (255, 0, 0, 100), quadeshRect)
         if quadeshHealth == 0:
             deathAnim = jhon.deathScreen(surface, screen_hight, screen_width)
             if deathAnim:
                 Ui.deathScreen(surface, 368, 329)
-        nativesHealth = enemy.takeDamage(surface, nativesHealth, nativesR, bulletR)
 
     pygame.draw.line(surface, (0, 0, 0, 0), (bulletX, bulletY), (screen_width, bulletY), 1)
     bulletR = pygame.Rect(bulletX, bulletY, screen_width, 10)
@@ -155,21 +164,6 @@ while run: #main game loop
             elif jhon_facing == "right":
                 bulletX += 100
                 bulletR = pygame.Rect(bulletX, bulletY, screen_width, 10)
-        # nativesHealth = enemy.takeDamage(surface, nativesHealth, nativesR, bulletR)
-
-    # if pygame.Rect.colliderect(quadeshRect, nativesR):
-    #     hited = True
-    #     if hited and healthCooldown != 0:
-    #         healthCooldown -= 1
-    #     if healthCooldown == 0 and hited and quadeshHealth > 0:
-    #         quadeshHealth -= 10
-    #         hited = False
-    #         healthCooldown = fps
-    #         pygame.draw.rect(surface, (255, 0, 0, 100), quadeshRect)
-    #     if quadeshHealth == 0:
-    #         deathAnim = jhon.deathScreen(surface, screen_hight, screen_width)
-    #         if deathAnim:
-    #             Ui.deathScreen(surface, 368, 329)
 
     if bulletX >= screen_width - 50:
         is_shooting = False
@@ -208,3 +202,4 @@ while run: #main game loop
     screen.blit(surface, (0, 0))
     pygame.display.flip() #update the screen
 pygame.quit() #exit the game
+pygame.font.quit()
