@@ -1,5 +1,6 @@
 import pygame
 import os
+import random
 from jhon import jhon
 from Grond import ground
 from bullet import bullet
@@ -17,7 +18,7 @@ info = pygame.display.Info()
 screen_width, screen_hight = info.current_w, info.current_h - 50
 screen = pygame.display.set_mode((screen_width, screen_hight), pygame.RESIZABLE) #create the screen instance
 surface = pygame.Surface((screen_width, screen_hight), pygame.SRCALPHA)
-font = pygame.font.Font("Game Of Squids.ttf", 80)
+font = pygame.font.Font("Radiof.ttf", 80)
 screen.fill((0, 0, 0))
 pygame.display.set_caption('Astronomical') #set a caption for the screen
 
@@ -60,6 +61,20 @@ speed = 1
 tTF = True
 t = 0
 clock = pygame.time.Clock()
+print(clock)
+
+# make a wait function
+def wait(lengh, fps):
+    Lengh = lengh * fps
+    waitLen = Lengh
+    deactivated = False
+    if waitLen <= Lengh:
+        waitLen += 1
+    if waitLen == Lengh:
+        deactivated = True
+        waitlen = 0
+    print(deactivated, waitlen)
+    return deactivated
 
 #figure everything out for the path sprite
 new_sceenH, new_sceenW = round(screen_hight, -2), round(screen_width, -2) #round of the screen height and width
@@ -92,7 +107,9 @@ while run: #main game loop
     clock.tick(fps)
     surface.fill((0, 0, 0, 0))
     screen.fill((0, 0, 0)) #fill the screen with a coulor
-    
+    bulletR = pygame.Rect(bulletX, bulletY, screen_width, 10)
+    print(clock)
+
     for event in pygame.event.get(): #check if the user has hit the exit button
         if event.type == pygame.QUIT:
             run = False
@@ -114,30 +131,25 @@ while run: #main game loop
     jhon.render(jhonX, jhonY, screen, jhon_img)
     Gun.render(gunX, gunY, screen, jhon_facing)
     Ui.infoTab_render(quadeshHealth, 0, 0, screen)
-    test = font.render("Score:", True, (0, 0, 0))
-    screen.blit(test, (600, 0))
+    Ui.score(screen, (screen_width-255, 0), "Radiof.ttf", 70, 0)
 
-    if nativesHealth > 0:
+    if nativesHealth > 0:# check if the enemy is dead
         enemy.render(nX, nY, screen)
         nativesR = pygame.Rect(nX, nY, 58, 200)
         if pygame.Rect.colliderect(quadeshRect, nativesR):
             hited = True
-        if hited and nativesHealthCooldown != 0:
-            nativesHealthCooldown -= 1
-        if nativesHealthCooldown == 0 and hited and quadeshHealth > 0:
+        if hited and wait(1, fps) and  quadeshHealth > 0:
             quadeshHealth -= 10
             hited = False
-            nativesHealthCooldown = fps
             pygame.draw.rect(surface, (255, 0, 0, 100), quadeshRect)
         if quadeshHealth == 0:
             deathAnim = jhon.deathScreen(surface, screen_hight, screen_width)
             if deathAnim:
                 Ui.deathScreen(surface, 368, 329)
 
-    pygame.draw.line(surface, (0, 0, 0, 0), (bulletX, bulletY), (screen_width, bulletY), 1)
-    bulletR = pygame.Rect(bulletX, bulletY, screen_width, 10)
     quadeshRect = pygame.Rect(jhonX, jhonY, 49, 200)
     
+    # make the enemy('s) follow the sprite
     if tTF:
         t += speed
     if t >= len(cordsX):
@@ -145,10 +157,10 @@ while run: #main game loop
         tTF = False
     else:
         tTF = True
-
     tTF = bressenham.testForCollide(wallsrfs, tTF, cordsX, cordsY, gradient)
     nX, nY = bressenham.moveSprite(screen, t, nativesX, nativesY, jhonX, jhonY)
 
+    # make the gun shoot in all cardinal directions
     if quadeshHealth > 0:
         if is_shooting:
             bullet.render(bulletX, bulletY, screen, jhon_facing)
@@ -169,6 +181,7 @@ while run: #main game loop
         is_shooting = False
         bulletX = 100
 
+    # make the player move
     if quadeshHealth > 0:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT: #check for the left key
@@ -195,7 +208,7 @@ while run: #main game loop
                     jhon_img = jhon_img_down
                     jhon_facing = 'up'
 
-    mpos = pygame.mouse.get_pos() #get the position of the mouse if the mouse is clicked
+    mpos = pygame.mouse.get_pos() #get the position of the mouse if the mouse is clicked !!!for debugging prposes only!!!
     if event.type == pygame.MOUSEBUTTONDOWN:
         print(mpos)
 
