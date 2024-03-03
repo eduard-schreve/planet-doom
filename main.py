@@ -61,20 +61,7 @@ speed = 1
 tTF = True
 t = 0
 clock = pygame.time.Clock()
-print(clock)
-
-# make a wait function
-def wait(lengh, fps):
-    Lengh = lengh * fps
-    waitLen = Lengh
-    deactivated = False
-    if waitLen <= Lengh:
-        waitLen += 1
-    if waitLen == Lengh:
-        deactivated = True
-        waitlen = 0
-    print(deactivated, waitlen)
-    return deactivated
+counter = 0
 
 #figure everything out for the path sprite
 new_sceenH, new_sceenW = round(screen_hight, -2), round(screen_width, -2) #round of the screen height and width
@@ -101,6 +88,10 @@ for i in range(number_of_spritesW):
     cordsW[i] = i*100
 
 while run: #main game loop
+    if counter < fps:
+        counter += 1
+    elif counter == fps:
+        counter = 0
     cordsX, cordsY, gradient = bressenham.bres(nativesX, nativesY, jhonX, jhonY)
     gunX = jhonX + 48
     gunY = jhonY + 114
@@ -108,7 +99,6 @@ while run: #main game loop
     surface.fill((0, 0, 0, 0))
     screen.fill((0, 0, 0)) #fill the screen with a coulor
     bulletR = pygame.Rect(bulletX, bulletY, screen_width, 10)
-    print(clock)
 
     for event in pygame.event.get(): #check if the user has hit the exit button
         if event.type == pygame.QUIT:
@@ -138,7 +128,7 @@ while run: #main game loop
         nativesR = pygame.Rect(nX, nY, 58, 200)
         if pygame.Rect.colliderect(quadeshRect, nativesR):
             hited = True
-        if hited and wait(1, fps) and  quadeshHealth > 0:
+        if hited and counter == fps and  quadeshHealth > 0:
             quadeshHealth -= 10
             hited = False
             pygame.draw.rect(surface, (255, 0, 0, 100), quadeshRect)
