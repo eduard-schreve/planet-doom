@@ -20,7 +20,7 @@ screen = pygame.display.set_mode((screen_width, screen_hight), pygame.RESIZABLE)
 surface = pygame.Surface((screen_width, screen_hight), pygame.SRCALPHA)
 font = pygame.font.Font("Radiof.ttf", 80)
 screen.fill((0, 0, 0))
-pygame.display.set_caption('Astronomical') #set a caption for the screen
+pygame.display.set_caption('Astronomical (1.0.0)') #set a caption for the screen
 
 fps = 60
 run = True
@@ -40,6 +40,7 @@ jhon_img_left = jhon.qualities('left')
 jhon_img_up = jhon.qualities('up')
 jhon_img_down = jhon.qualities('down')
 quadeshHealth = 200
+score = 0
 nativesHealthCooldown = 0
 nativesDeathCooldown = 0
 quadeshRect = pygame.Rect(jhonX, jhonY, 49, 200)
@@ -52,7 +53,7 @@ bulletR = pygame.Rect(bulletX, bulletY, screen_width, 10)
 nativesX, nativesY = 700, 400
 nX, nY = nativesX, nativesY
 nativesR = pygame.Rect(nX, nY, 58, 200)
-nativesHealth = 20
+nativesHealth = 0
 enemyS = enemy.qualities()
 wallX, wallY = 0, 0
 wallsrfs = pygame.Rect(0, 0, 120, 80)
@@ -62,6 +63,7 @@ tTF = True
 t = 0
 clock = pygame.time.Clock()
 counter = 0
+mpos = pygame.mouse.get_pos()
 
 #figure everything out for the path sprite
 new_sceenH, new_sceenW = round(screen_hight, -2), round(screen_width, -2) #round of the screen height and width
@@ -98,7 +100,6 @@ while run: #main game loop
     clock.tick(fps)
     surface.fill((0, 0, 0, 0))
     screen.fill((0, 0, 0)) #fill the screen with a coulor
-    bulletR = pygame.Rect(bulletX, bulletY, screen_width, 10)
 
     for event in pygame.event.get(): #check if the user has hit the exit button
         if event.type == pygame.QUIT:
@@ -109,8 +110,8 @@ while run: #main game loop
                 is_shooting = True
                 bulletX = gunX
                 bulletY = gunY
-        if nativesHealth > 0:
-            nativesHealth = enemy.takeDamage(surface, nativesHealth, nativesR, bulletR)
+                if nativesHealth == 5:
+                    score += 3
 
     # #create the background
     for y in range(number_of_spritesH):
@@ -121,7 +122,10 @@ while run: #main game loop
     jhon.render(jhonX, jhonY, screen, jhon_img)
     Gun.render(gunX, gunY, screen, jhon_facing)
     Ui.infoTab_render(quadeshHealth, 0, 0, screen)
-    Ui.score(screen, (screen_width-255, 0), "Radiof.ttf", 70, 0)
+    Ui.score(screen, (screen_width-255, 0), "Radiof.ttf", 70, score)
+    if nativesHealth == 0:
+        nativesX, nativesY = random.randint(0, screen_width), random.randint(0, screen_hight)
+        nativesHealth = 20
 
     if nativesHealth > 0:# check if the enemy is dead
         enemy.render(nX, nY, screen)
@@ -136,6 +140,12 @@ while run: #main game loop
             deathAnim = jhon.deathScreen(surface, screen_hight, screen_width)
             if deathAnim:
                 Ui.deathScreen(surface, 368, 329)
+    
+    # check if the respawn button is clicked
+    respawnRect = pygame.Rect(368, 384, 315, 110)
+    if event.type == pygame.MOUSEBUTTONDOWN:
+        if pygame.Rect.collidepoint(respawnRect, mpos):
+            quadeshHealth = 200
 
     quadeshRect = pygame.Rect(jhonX, jhonY, 49, 200)
     
@@ -166,6 +176,8 @@ while run: #main game loop
             elif jhon_facing == "right":
                 bulletX += 100
                 bulletR = pygame.Rect(bulletX, bulletY, screen_width, 10)
+            if nativesHealth > 0:
+                nativesHealth = enemy.takeDamage(surface, nativesHealth, nativesR, bulletR)
 
     if bulletX >= screen_width - 50:
         is_shooting = False
