@@ -8,7 +8,7 @@ from gun import Gun
 from enemy import enemy
 from imovables import wall
 from ui import Ui
-import bressenham
+import follow
 
 pygame.init()
 pygame.font.init()
@@ -94,7 +94,7 @@ while run: #main game loop
         counter += 1
     elif counter == fps:
         counter = 0
-    cordsX, cordsY, gradient = bressenham.bres(nativesX, nativesY, jhonX, jhonY)
+    cordsX, cordsY, gradient = follow.bres(nativesX, nativesY, jhonX, jhonY)
     gunX = jhonX + 48
     gunY = jhonY + 114
     clock.tick(fps)
@@ -157,8 +157,8 @@ while run: #main game loop
         tTF = False
     else:
         tTF = True
-    tTF = bressenham.testForCollide(wallsrfs, tTF, cordsX, cordsY, gradient)
-    nX, nY = bressenham.moveSprite(screen, t, nativesX, nativesY, jhonX, jhonY)
+    tTF = follow.testForCollide(wallsrfs, tTF, cordsX, cordsY, gradient)
+    nX, nY = follow.moveSprite(screen, t, nativesX, nativesY, jhonX, jhonY)
 
     # make the gun shoot in all cardinal directions
     if quadeshHealth > 0:

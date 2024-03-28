@@ -4,7 +4,7 @@ pygame.init()
 
 class ground():
     def __init__(self):
-        self.image = pygame.image.load('ground.png').convert_alpha()
+        self.image = pygame.image.load('grass.png').convert_alpha()
 
     def render(self, X, Y, screen):
         self.x = X
