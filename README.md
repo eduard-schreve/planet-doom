@@ -1,6 +1,4 @@
-Hello and welcome to my game so far it is just 2 sprites chasing eachother on screen, 
-but I have big plans for this game an will continue to publish my code.
-I hope you enjoy the game or just find some usefull code.
+Welcome to the first official release of astronomical. It has been a long journey and I still have a lot of bugs i know of and am looking into, but there is still a lot of working code that I belive every game developer can use for the bettering of a game. So for those that are still reading congadulations and hop on in and explore the code
 
 !!!WARNING!!!
 some of this code might not work or is highly bugged
