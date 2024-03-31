@@ -1,6 +1,6 @@
 import pygame
 import math
-import bressenham
+import follow
 
 pygame.init()
 
@@ -12,7 +12,7 @@ clock = pygame.time.Clock()
 run = True
 cx, cy = 500, 300
 mpos = pygame.mouse.get_pos()
-cordsX, cordsY, gradient = bressenham.bres(int(cx), int(cy), mpos[0], mpos[1])
+cordsX, cordsY, gradient = follow.bres(int(cx), int(cy), mpos[0], mpos[1])
 
 speed = 1
 t = 0
@@ -52,7 +52,7 @@ while run:
             lyn = pygame.Rect(cordsX[i], cordsY[i], 1, 1)
             pygame.draw.rect(screen, (0, 255, 0), lyn)
 
-    cordsX, cordsY, gradient = bressenham.bres(int(cx), int(cy), mpos[0], mpos[1])
+    cordsX, cordsY, gradient = follow.bres(int(cx), int(cy), mpos[0], mpos[1])
     t += speed
     # px, py = cordsX[t], cordsY[t]
 

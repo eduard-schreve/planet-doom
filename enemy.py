@@ -20,6 +20,5 @@ class enemy():
         if pygame.Rect.colliderect(eRect, bRect):
             health -= 5
             pygame.draw.rect(screen, (255, 0, 0, 100), eRect)
-            print(health)
 
         return health

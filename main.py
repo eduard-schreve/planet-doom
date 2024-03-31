@@ -33,6 +33,7 @@ wall = wall()
 Ui = Ui()
 jhonX = 100
 jhonY = screen_hight - 300
+quadeshDX, quadeshDY = 4, 4# how much the player moves every frame
 jhon_facing = 'right'
 jhon_img = jhon.qualities('right')
 jhon_img_right = jhon.qualities('right')
@@ -43,6 +44,7 @@ quadeshHealth = 200
 score = 0
 nativesHealthCooldown = 0
 nativesDeathCooldown = 0
+spawnradius = pygame.Rect(jhonX - 100, jhonY - 100, 400, 400)
 quadeshRect = pygame.Rect(jhonX, jhonY, 49, 200)
 hited = False
 bulletHit = True
@@ -100,6 +102,7 @@ while run: #main game loop
     clock.tick(fps)
     surface.fill((0, 0, 0, 0))
     screen.fill((0, 0, 0)) #fill the screen with a coulor
+    spawnradius = pygame.Rect(jhonX - 100, jhonY - 100, 400, 400)
 
     for event in pygame.event.get(): #check if the user has hit the exit button
         if event.type == pygame.QUIT:
@@ -119,15 +122,32 @@ while run: #main game loop
                 ground.render(cordsW[x], cordsH[y], screen)
                 
     #render die sprites
+    pygame.draw.rect(surface, (255, 0, 0, 100), spawnradius)
     jhon.render(jhonX, jhonY, screen, jhon_img)
     Gun.render(gunX, gunY, screen, jhon_facing)
     Ui.infoTab_render(quadeshHealth, 0, 0, screen)
     Ui.score(screen, (screen_width-255, 0), "Radiof.ttf", 70, score)
+
     if nativesHealth == 0:
         nativesX, nativesY = random.randint(0, screen_width), random.randint(0, screen_hight)
-        nativesHealth = 20
+        if spawnradius.collidepoint(nativesX, nativesY):
+            nativesHealth = 0
+        else:
+            nativesHealth = 20
 
-    if nativesHealth > 0:# check if the enemy is dead
+    # check for collision in x direction
+    if nativesR.colliderect(jhonX + quadeshDX, jhonY, 49, 200) == False:
+        nX, nY = follow.moveSprite(screen, t, nativesX, nativesY, jhonX, jhonY)
+    if nativesR.colliderect(jhonX - quadeshDX, jhonY, 49, 200) == False:
+        nX, nY = follow.moveSprite(screen, t, nativesX, nativesY, jhonX, jhonY)
+    # check for collision in y direction
+    if nativesR.colliderect(jhonX, jhonY + quadeshDY, 49, 200) == False:
+        nX, nY = follow.moveSprite(screen, t, nativesX, nativesY, jhonX, jhonY)
+    if nativesR.colliderect(jhonX, jhonY - quadeshDY, 49, 200) == False:
+        nX, nY = follow.moveSprite(screen, t, nativesX, nativesY, jhonX, jhonY)
+
+    # enemy spawning code
+    if nativesHealth > 0:# check that the enemy is not dead
         enemy.render(nX, nY, screen)
         nativesR = pygame.Rect(nX, nY, 58, 200)
         if pygame.Rect.colliderect(quadeshRect, nativesR):
@@ -158,7 +178,6 @@ while run: #main game loop
     else:
         tTF = True
     tTF = follow.testForCollide(wallsrfs, tTF, cordsX, cordsY, gradient)
-    nX, nY = follow.moveSprite(screen, t, nativesX, nativesY, jhonX, jhonY)
 
     # make the gun shoot in all cardinal directions
     if quadeshHealth > 0:
@@ -186,26 +205,26 @@ while run: #main game loop
     # make the player move
     if quadeshHealth > 0:
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT: #check for the left key
-                jhonX -= 4
+            if event.key == pygame.K_LEFT and nativesR.colliderect(jhonX - quadeshDX, jhonY + 1, 1, 198) == False: #check for the left key
+                jhonX -= quadeshDX
                 if jhon_facing != 'left':
                     jhon_img = jhon_img_left
                     jhon_facing = 'left'
 
-            if event.key == pygame.K_RIGHT: #check for the right key
-                jhonX += 4
+            if event.key == pygame.K_RIGHT and nativesR.colliderect(jhonX + quadeshDX, jhonY - 1, 1, 198) == False: #check for the right key
+                jhonX += quadeshDX
                 if jhon_facing != 'right':
                     jhon_img = jhon_img_right
                     jhon_facing = 'right'
             
-            if event.key == pygame.K_UP: #check for the up key
-                jhonY -= 4
+            if event.key == pygame.K_UP and nativesR.colliderect(jhonX + 1, jhonY - quadeshDY, 47, 1) == False: #check for the up key
+                jhonY -= quadeshDY
                 if jhon_facing != 'down':
                     jhon_img = jhon_img_up
                     jhon_facing = 'down'
 
-            if event.key == pygame.K_DOWN: #check for the down key
-                jhonY += 4
+            if event.key == pygame.K_DOWN and nativesR.colliderect(jhonX - 1, jhonY + quadeshDY, 47, 1) == False: #check for the down key
+                jhonY += quadeshDY
                 if jhon_facing != 'up':
                     jhon_img = jhon_img_down
                     jhon_facing = 'up'

@@ -1,6 +1,6 @@
 import pygame
 from enemy import enemy
-import bressenham
+import follow
 import math
 
 pygame.init()
@@ -27,7 +27,7 @@ while run:
     screen.fill((0, 0, 0))
     clock.tick(fps)
     x, y = mpos[0], mpos[1]
-    cordsX, cordsY, gradient = bressenham.bres(lX, lY, x, y)
+    cordsX, cordsY, gradient = follow.bres(lX, lY, x, y)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -38,7 +38,7 @@ while run:
 
     mpos = pygame.mouse.get_pos() #get the position of the mouse if the mouse is clicked
 
-    tTF = bressenham.testForCollide(wallsrfs, tTF, cordsX, cordsY, gradient)
+    tTF = follow.testForCollide(wallsrfs, tTF, cordsX, cordsY, gradient)
     if tTF:
         t += speed
     if t >= len(cordsX):
@@ -46,7 +46,7 @@ while run:
         tTF = False
     else:
         tTF = True
-    circle_X, circle_Y = bressenham.moveSprite(screen, t, lX, lY, x, y)
+    circle_X, circle_Y = follow.moveSprite(screen, t, lX, lY, x, y)
     pygame.draw.circle(screen, (255, 255, 255), (circle_X, circle_Y), 50)
 
     if event.type == pygame.MOUSEBUTTONDOWN:
